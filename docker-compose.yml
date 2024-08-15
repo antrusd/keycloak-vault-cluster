@@ -1,8 +1,8 @@
 services:
 
-  postgres01:
+  postgres:
     image: postgres:13.2
-    container_name: postgres01
+    container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -16,9 +16,9 @@ services:
     network_mode: bridge
     restart: unless-stopped
 
-  keycloak01:
+  keycloak:
     image: quay.io/keycloak/keycloak:25.0
-    container_name: keycloak01
+    container_name: keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: password
@@ -31,17 +31,17 @@ services:
     ports:
       - 8080:8080
       - 8443:8443
-    hostname: keycloak01.example.com
+    hostname: keycloak.example.com
     network_mode: bridge
     links:
-      - postgres01:postgres01
+      - postgres:postgres
     depends_on:
-      postgres01:
+      postgres:
         condition: service_started
 
-  consul01:
+  consul:
     image: hashicorp/consul:1.19.1
-    container_name: consul01
+    container_name: consul
     volumes:
       - ./consul/conf/config.hcl:/consul/config/config.hcl
       - consul_data:/consul/data
@@ -63,26 +63,77 @@ services:
       - ./vault/conf/config.hcl:/vault/config/config.hcl
       - ./certs/wildcard-example-com.key:/vault/cert/wildcard-example-com.key
       - ./certs/wildcard-example-com.crt:/vault/cert/wildcard-example-com.crt
-      - vault_logs:/vault/logs
-      - vault_file:/vault/file
+      - vault01_logs:/vault/logs
+      - vault01_file:/vault/file
     cap_add:
       - IPC_LOCK
     ports:
-      - 8200:8200
+      - 8201:8200
     hostname: vault01.example.com
     network_mode: bridge
     links:
-      - consul01:consul01
-      - keycloak01:keycloak01
+      - consul:consul
+      - keycloak:keycloak
     depends_on:
-      consul01:
+      consul:
         condition: service_started
-      keycloak01:
+      keycloak:
+        condition: service_started
+
+  vault02:
+    image: hashicorp/vault:1.17.3
+    container_name: vault02
+    command:
+      - server
+    environment:
+      VAULT_ADDR: https://127.0.0.1:8200
+      VAULT_SKIP_VERIFY: "true"
+    volumes:
+      - ./vault/init.sh:/vault/unseal.sh
+      - ./vault/creds:/vault/creds
+      - ./vault/conf/config.hcl:/vault/config/config.hcl
+      - ./certs/wildcard-example-com.key:/vault/cert/wildcard-example-com.key
+      - ./certs/wildcard-example-com.crt:/vault/cert/wildcard-example-com.crt
+      - vault02_logs:/vault/logs
+      - vault02_file:/vault/file
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 8202:8200
+    hostname: vault02.example.com
+    network_mode: bridge
+    links:
+      - consul:consul
+      - keycloak:keycloak
+    depends_on:
+      consul:
+        condition: service_started
+      keycloak:
+        condition: service_started
+
+  haproxy:
+    image: haproxy:2.7-alpine
+    container_name: haproxy
+    volumes:
+      - ./certs/wildcard-example-com.pem:/usr/local/etc/haproxy/wildcard-example-com.pem
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - 8200:8200
+    network_mode: bridge
+    links:
+      - vault01:vault01
+      - vault02:vault02
+    depends_on:
+      vault01:
+        condition: service_started
+      vault02:
         condition: service_started
 
 volumes:
   postgres_data:
   keycloak_data:
   consul_data:
-  vault_logs:
-  vault_file:
+  vault01_logs:
+  vault01_file:
+  vault02_logs:
+  vault02_file:

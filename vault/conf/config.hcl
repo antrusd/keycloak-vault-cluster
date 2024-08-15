@@ -5,11 +5,11 @@ listener "tcp" {
 }
 
 storage "consul" {
-  address = "consul01:8500"
+  address = "consul:8500"
   path    = "vault/"
 }
 
 ui = true
 disable_mlock = "true"
-api_addr = "http://127.0.0.1:8200"
+api_addr = "https://127.0.0.1:8200"
 log_level = "Debug"
