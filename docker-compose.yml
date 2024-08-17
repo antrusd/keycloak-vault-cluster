@@ -29,8 +29,8 @@ services:
       - ./keycloak/conf:/opt/keycloak/conf
       - keycloak_data:/opt/keycloak/data
     ports:
-      - 8080:8080
-      - 8443:8443
+      - 8080:80
+      - 8443:443
     hostname: keycloak.example.com
     network_mode: bridge
     links:
