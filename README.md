@@ -80,6 +80,9 @@ Login to https://keycloak.example.com with user: `admin` , password: `password` 
 Create a new realm in Vault by going to the menu, selecting the **Keycloak** drop-down menu, and clicking the **Create Realm** button.
 
 ![keycloak create realm #1](images/keycloak_create_realm_1.png)
+
+Put `vault` as the **Realm name**
+
 ![keycloak create realm #2](images/keycloak_create_realm_2.png)
 
 Next, create an OIDC client by navigating to the menu, selecting **Clients** and clicking the **Create Client** button.
@@ -94,7 +97,7 @@ Check the **Client authentication**, **Standard flow** and **Service accounts ro
 
 ![keycloak create client #3](images/keycloak_create_client_3.png)
 
-Put following URLs as the Valid redirect URIs and then click **Save** button
+Put following URLs as the **Valid redirect URIs** and then click **Save** button
 ```
 https://vault.example.com:8200/ui/vault/auth/oidc/oidc/callback
 https://localhost:8250/oidc/callback
