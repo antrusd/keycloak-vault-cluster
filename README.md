@@ -69,11 +69,11 @@ Login to https://keycloak.example.com with user: `admin` , password: `password` 
 > # docker-compose.yaml
 > …
 > keycloak:
-> image: quay.io/keycloak/keycloak:25.0
-> container_name: keycloak
-> environment:
-> KEYCLOAK_ADMIN: admin
-> KEYCLOAK_ADMIN_PASSWORD: password
+>   image: quay.io/keycloak/keycloak:25.0
+>   container_name: keycloak
+>   environment:
+>     KEYCLOAK_ADMIN: admin
+>     KEYCLOAK_ADMIN_PASSWORD: password
 > …
 > ```
 
