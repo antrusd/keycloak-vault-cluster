@@ -1,7 +1,6 @@
 # Keycloak, Vault & Consul Integration
 
 ## Requirement
- - Linux
  - docker >= v26.0.0
  - docker compose >= v2.26.0
  - openssl >= v3.2.2
@@ -55,10 +54,20 @@ To simplify access to the apps, add the `/etc/hosts` output from the `make info`
 198.18.64.7 vault.example.com
 …
 ```
+> **:warning_sign: Warning**
+>
+> If you are using Docker Desktop (Windows or OSX users), write 127.0.0.1 instead. Eg.
+> ```
+> # /etc/hosts
+> …
+> 127.0.0.1 keycloak.example.com vault.example.com
+> …
+> ```
+>
 
 ## Keycloak Configuration
 
-Login to https://keycloak.example.com with user: `admin` , password: `password` .
+Login to https://keycloak.example.com:8443 with user: `admin` , password: `password` .
 
 ![keycloak login](images/keycloak_login.png)
 
@@ -140,7 +149,7 @@ Put following details:
 
 | Name | Value |
 | ----------- | ----------- |
-| OIDC discovery URL | `https://keycloak.example.com/realms/vault` |
+| OIDC discovery URL | `https://keycloak.example.com:8443/realms/vault` |
 |Default role|`default`|
 
 ![vault OIDC #3](images/vault_oidc_3.png)
@@ -152,7 +161,7 @@ Click **OIDC Options**, fill out with following details, and click **Save** butt
 |OIDC client ID| `vault` |
 |OIDC client secret|Credentials copied from Keycloak client credentials|
 |OIDC discovery CA PEM|`ca.crt` in certs directory|
-|Bound issuer|`https://keycloak.example.com/realms/vault`|
+|Bound issuer|`https://keycloak.example.com:8443/realms/vault`|
 
 ![vault OIDC #4](images/vault_oidc_4.png)
 
@@ -177,3 +186,11 @@ Enter new password and click **Submit** button.
 
 ![vault OIDC Login #3](images/vault_oidc_login_3.png)
 ![vault OIDC Login #4](images/vault_oidc_login_4.png)
+
+## Clean Up
+
+To clean-up all containers, eg. when you want to start all over from beginning, run following command:
+
+```bash
+make clean
+```
