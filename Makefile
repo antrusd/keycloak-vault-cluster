@@ -1,4 +1,4 @@
-.PHONY: certs up unseal info stop down clean
+.PHONY: certificate up unseal info stop down clean
 
 
 certs/ca.crt:
@@ -8,11 +8,11 @@ certs/wildcard-example-com.crt: certs/ca.crt
 	openssl req -nodes -newkey rsa:4096 -keyout certs/wildcard-example-com.key -out certs/wildcard-example-com.csr -subj "/C=TR/ST=Ankara/L=Ankara/O=Company/OU=IT/CN=*.example.com" -addext "subjectAltName = DNS:*.example.com"
 	openssl x509 -req -CA certs/ca.crt -CAkey certs/ca.key -in certs/wildcard-example-com.csr -out certs/wildcard-example-com.crt -days 365 -copy_extensions copy -CAcreateserial
 
-certs: certs/ca.crt certs/wildcard-example-com.crt
+certificate: certs/ca.crt certs/wildcard-example-com.crt
 	cat certs/ca.crt certs/wildcard-example-com.crt certs/wildcard-example-com.key > certs/wildcard-example-com.pem
 	chmod 0644 certs/wildcard-example-com.*
 
-up: certs
+up: certificate
 	docker compose up -d
 
 unseal:
